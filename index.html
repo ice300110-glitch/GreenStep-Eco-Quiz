@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenStep | Eco Quiz</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600&display=swap');
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f0fdf4; /* เปลี่ยนพื้นหลังเว็บเป็นสีเขียวมินต์พาสเทลอ่อนมากๆ */
+            background-image: radial-gradient(#dcfce7 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            color: #334155;
+            font-family: 'Noto Sans Thai', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* หน้าเริ่มต้นสตาร์ท */
+        .welcome-container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .main-logo {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            animation: floatCharacter 3s ease-in-out infinite;
+        }
+
+        h1 {
+            color: #059669;
+            font-size: 3rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        h2 {
+            color: #475569;
+            font-size: 1.4rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        p.intro-text {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        /* กล่องควิซดีไซน์โค้งมน */
+        .quiz-box {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(4, 120, 87, 0.08);
+            max-width: 550px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .energy-category { border-top: 8px solid #60a5fa; } 
+        .waste-category { border-top: 8px solid #34d399; }  
+        .travel-category { border-top: 8px solid #fbbf24; } 
+
+        .quiz-box p {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .quiz-box button {
+            display: block;
+            width: 100%;
+            background-color: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 16px;
+            margin: 14px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+
+        .quiz-box button:hover {
+            transform: translateY(-2px);
+            background-color: #f0fdf4;
+            border-color: #34d399;
+            color: #065f46;
+            box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15);
+        }
+
+        #start-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s ease;
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+        #start-btn:hover {
+            transform: translateY(-2px);
+            background-color: #059669;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* 👑 ปรับปรุงกล่องสรุปผลลัพธ์บนหน้าเว็บให้สวยจึ้ง ทันสมัย ไม่โล่ง 👑 */
+        #result-box {
+            background: #ffffff;
+            border: 3px solid #34d399;
+            padding: 40px 30px;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(4, 120, 87, 0.12);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .result-header h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #065f46;
+            font-weight: 600;
+        }
+        .character-animate {
+            font-size: 45px;
+            animation: floatCharacter 3s ease-in-out infinite;
+        }
+
+        /* จัด Layout การ์ดคะแนนกับคำแนะนำด้านใน */
+        .result-container {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            text-align: left;
+            margin-top: 25px;
+        }
+        
+        /* ฝั่งซ้าย: กล่องคะแนนสีฟ้าพาสเทลนวลๆ */
+        .result-score-side {
+            flex: 1;
+            background-color: #f0f7ff;
+            padding: 22px 18px;
+            border-radius: 20px;
+            border: 1px solid #e0f2fe;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .result-score-side .side-title {
+            font-weight: 600;
+            color: #1d4ed8;
+            font-size: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .result-score-side h3 {
+            margin: 14px 0;
+            font-size: 15px;
+            font-weight: 400;
+            color: #475569;
+        }
+
+        /* ฝั่งขวา: กล่องคำแนะนำสีส้มพาสเทลนวลๆ */
+        .result-feedback-side {
+            flex: 1.2;
+            background-color: #fffbeb;
+            padding: 22px 18px;
+            border-radius: 20px;
+            border: 1px solid #fef3c7;
+        }
+        .bear-badge {
+            background-color: #fef3c7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b45309;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        /* ตกแต่งปุ่มกดด้านล่างกล่องผลลัพธ์ */
+        .save-btn {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 16px;
+            margin: 16px 0 10px 0;
+            cursor: pointer;
+            font-family: 'Noto Sans Thai', sans-serif;
+            color: white;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            box-shadow: 0 4px 14px rgba(220, 39, 67, 0.25);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 39, 67, 0.4);
+        }
+
+        .restart-btn {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: 'Noto Sans Thai', sans-serif;
+            color: #64748b;
+            background-color: #f1f5f9;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .restart-btn:hover {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+        @keyframes floatCharacter {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.04); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .result-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container" id="welcome-screen">
+        <div class="main-logo">🌍🌱</div>
+        <h1>GreenStep</h1>
+        <h2>คุณรักษ์โลกแค่ไหนกันนะ?</h2>
+        <p class="intro-text">มาร่วมตอบคำถาม 10 ข้อ เพื่อเช็กพฤติกรรมในชีวิตประจำวันกันเถอะ!</p>
+        <button id="start-btn">เริ่มทำควิซกันเลย 🚀</button>
+    </div>
+
+    <div class="quiz-box energy-category">
+        <p>ข้อ 1: พฤติกรรมการเปิดแอร์ในห้องนอนของคุณเป็นอย่างไร?</p>
+        <button data-score="3">เปิด 26 องศาขึ้นไป คู่กับเปิดพัดลม 🍃</button>
+        <button data-score="2">เปิด 25 องศาปกติทั่วไป ❄️</button>
+        <button data-score="1">เปิดแอร์ฉ่ำ ๆ ต่ำกว่า 24 องศาลงไป 🧊</button>
+    </div>
+
+    <div class="quiz-box energy-category">
+        <p>ข้อ 2: เมื่อคุณชาร์จแบตมือถือหรือโน้ตบุ๊กจนเต็ม 100% แล้ว คุณทำอย่างไร?</p>
+        <button data-score="3">ถอดสายชาร์จ และปิดสวิตช์ปลั๊กพ่วงทันที 🔌</button>
+        <button data-score="2">ถอดแค่สายชาร์จออก แต่เปิดสวิตช์ปลั๊กทิ้งไว้ 🔌</button>
+        <button data-score="1">เสียบสายชาร์จค้างไว้แบบนั้นทั้งคืน 🔋</button>
+    </div>
+
+    <div class="quiz-box energy-category">
+        <p>ข้อ 3: เวลาออกจากห้องเรียนหรือห้องทำงานเป็นคนสุดท้าย คุณทำอย่างไร?</p>
+        <button data-score="3">เช็กและปิดไฟ ปิดพัดลม/แอร์ ทุกตัวในห้อง 💡</button>
+        <button data-score="2">ปิดแค่บางตัว 🚪</button>
+        <button data-score="1">เดินออกไปเลย เพราะคิดว่าเดี๋ยวก็มีคนมาเปิดต่อ 🏃</button>
+    </div>
+
+    <div class="quiz-box waste-category">
+        <p>ข้อ 4: เวลาไปซื้อของที่ร้านค้าสหกรณ์โรงเรียน หรือร้านสะดวกซื้อ?</p>
+        <button data-score="3">พกถุงผ้าไปเอง หรือใส่กระเป๋าส่วนตัวด้วยเสมอ 🛍️</button>
+        <button data-score="2">ถ้าของชิ้นเล็กจะถือเอา ถ้าชิ้นใหญ่ค่อยรับถุงพลาสติก 🛍️</button>
+        <button data-score="1">รับถุงพลาสติกทุกครั้ง ไม่ว่าจะซื้อของกี่ชิ้น 🛍️</button>
+    </div>
+
+    <div class="quiz-box waste-category">
+        <p>ข้อ 5: พฤติกรรมการดื่มน้ำในชีวิตประจำวันของคุณเป็นแบบไหน?</p>
+        <button data-score="3">พกกระบอกน้ำ/แก้วเก็บความเย็นส่วนตัวมาเติมน้ำเอง 🥤</button>
+        <button data-score="2">ซื้อน้ำดื่มขวดพลาสติก แต่พยายามใช้ซ้ำ 2-3 ครั้งก่อนทิ้ง 🍼</button>
+        <button data-score="1">ซื้อน้ำดื่มขวดพลาสติกใหม่ทุกครั้งที่หิวน้ำ 🍼</button>
+    </div>
+
+    <div class="quiz-box waste-category">
+        <p>ข้อ 6: ก่อนจะทิ้งขวดน้ำพลาสติกหรือขยะเมื่ออยู่ข้างนอกบ้าน คุณทำอย่างไร?</p>
+        <button data-score="3">แยกขวดพลาสติก เทน้ำทิ้ง และทิ้งให้ถูกถังเสมอ ♻️</button>
+        <button data-score="2">มองหาถังรีไซเคิล ถ้าเจอจะทิ้ง ถ้าไม่เจอก็รวมถังขยะทั่วไป 🗑️</button>
+        <button data-score="1">เจอถังไหนใกล้สุดก็โยนใส่ถังนั้นเลย ไม่เคยแยกประเภท 🚮</button>
+    </div>
+
+    <div class="quiz-box waste-category">
+        <p>ข้อ 7: เวลาสั่งอาหารผ่าน Delivery พฤติกรรมเรื่องช้อนส้อมพลาสติกเป็นอย่างไร?</p>
+        <button data-score="3">ปฏิเสธไม่รับช้อนส้อมพลาสติก (ใช้ช้อนส้อมส่วนตัวที่มีอยู่แล้ว) 🍴</button>
+        <button data-score="2">จำเป็นต้องรับมาพร้อมอาหาร แต่เอากลับไปล้างใช้ซ้ำเพื่อไม่ให้เสียของ 🧼</button>
+        <button data-score="1">รับมาใช้ครั้งเดียวพร้อมมื้ออาหารนั้นๆ แล้วทิ้งลงถังขยะทันที 🗑️</button>
+    </div>
+
+    <div class="quiz-box travel-category">
+        <p>ข้อ 8: ปกติคุณเดินทางด้วยวิธีไหนบ่อยที่สุดในรอบสัปดาห์?</p>
+        <button data-score="3">เดิน, ปั่นจักรยาน หรือใช้รถโดยสารสาธารณะ 🚌</button>
+        <button data-score="2">นั่งรถจักรยานยนต์ หรือติดรถยนต์ไปกับคนอื่น (Car pool) 🏍️</button>
+        <button data-score="1">ขับรถยนต์ส่วนตัว หรือนั่งรถยนต์ส่วนตัว 🚗</button>
+    </div>
+
+    <div class="quiz-box travel-category">
+        <p>ข้อ 9: ถ้าต้องไปซื้อของที่ร้านค้าหน้าปากซอยระยะทางประมาณ 300 เมตร คุณจะไปอย่างไร?</p>
+        <button data-score="3">เดินไป หรือปั่นจักรยานไปชิล ๆ 🚶</button>
+        <button data-score="2">ขี่รถจักรยานยนต์ไป แป๊บเดียวถึง 🏍️</button>
+        <button data-score="1">สตาร์ทรถยนต์ขับออกไป 🚗</button>
+    </div>
+
+    <div class="quiz-box travel-category">
+        <p>ข้อ 10: เวลาขึ้น-ลงอาคารที่มีความสูงแค่ 2-3 ชั้น คุณเลือกใช้อะไร?</p>
+        <button data-score="3">เดินขึ้นบันได ได้ออกกำลังกายและประหยัดไฟ 🧗</button>
+        <button data-score="2">ถ้าไม่รีบจะเดินบันได แต่ถ้ารีบจะใช้ลิฟต์ 🛗</button>
+        <button data-score="1">รอใช้ลิฟต์ตลอด ไม่ว่าจะขึ้นหรือลงกี่ชั้นก็ตาม 🛗</button>
+    </div>
+
+    <div id="result-box">
+        <div class="result-header">
+            <span class="character-animate">🌍🌱</span>
+            <h2>ควิซเสร็จสิ้นแล้ว!</h2>
+            <span class="character-animate">🤖✨</span>
+        </div>
+        
+        <p style="color: #64748b; font-size: 14px; margin-top: -5px; margin-bottom: 5px;">นี่คือผลวิเคราะห์พฤติกรรมรักษ์โลกเฉพาะคุณ</p>
+        
+        <div class="result-container">
+            <div class="result-score-side">
+                <div class="side-title">📊 สรุปคะแนน:</div>
+                <h3 id="energy-result">🔋 พลังงาน: ...</h3>
+                <h3 id="waste-result">♻️ ขยะ/พลาสติก: ...</h3>
+                <h3 id="travel-result">🚗 การเดินทาง: ...</h3>
+            </div>
+            
+            <div class="result-feedback-side">
+                <div class="bear-badge">🐻 เจ้าหมี Eco-Expert แนะนำว่า:</div>
+                <p id="feedback-text" style="font-size: 14px; margin: 0; font-weight: 600; line-height: 1.6; color: #475569;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="control-buttons" style="display:none; max-width:600px; width:100%;">
+        <button class="save-btn" id="download-btn">📸 เซฟการ์ดรูปภาพสวย ๆ สำหรับลง IG Story</button>
+        <button class="restart-btn" onclick="window.location.reload()">ทำควิซอีกครั้ง 🔄</button>
+    </div>
+
+    <script>
+        let scoreEnergy = 0;
+        let scoreWaste = 0;
+        let scoreTravel = 0;
+        let currentStep = 0;
+
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizBoxes = document.querySelectorAll('.quiz-box');
+        const resultBox = document.getElementById('result-box');
+        const startBtn = document.getElementById('start-btn');
+        const controlButtons = document.getElementById('control-buttons');
+
+        function showStep(step) {
+            welcomeScreen.style.display = 'none';
+            quizBoxes.forEach(box => box.style.display = 'none');
+            resultBox.style.display = 'none';
+            controlButtons.style.display = 'none';
+
+            if (step === 0) {
+                welcomeScreen.style.display = 'block';
+            } else if (step >= 1 && step <= 10) {
+                quizBoxes[step - 1].style.display = 'block';
+            } else if (step === 11) {
+                showResult();
+            }
+        }
+
+        // ซ่อนองค์ประกอบอื่นๆ ตอนเริ่มต้น
+        quizBoxes.forEach(box => box.style.display = 'none');
+        resultBox.style.display = 'none';
+
+        if (startBtn) {
+            startBtn.onclick = function() {
+                currentStep = 1;
+                showStep(currentStep);
+            };
+        }
+
+        quizBoxes.forEach(box => {
+            const buttons = box.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.onclick = function() {
+                    const score = parseInt(btn.getAttribute('data-score'));
+
+                    if (box.classList.contains('energy-category')) {
+                        scoreEnergy += score;
+                    } else if (box.classList.contains('waste-category')) {
+                        scoreWaste += score;
+                    } else if (box.classList.contains('travel-category')) {
+                        scoreTravel += score;
+                    }
+
+                    currentStep++;
+                    showStep(currentStep);
+                };
+            });
+        });
+
+        function showResult() {
+            resultBox.style.display = 'block';
+            controlButtons.style.display = 'block';
+
+            document.getElementById('energy-result').innerHTML = `🔋 พลังงาน: <b style="color:#2563eb;">${scoreEnergy}</b> / 9`;
+            document.getElementById('waste-result').innerHTML = `♻️ ขยะ/พลาสติก: <b style="color:#059669;">${scoreWaste}</b> / 12`;
+            document.getElementById('travel-result').innerHTML = `🚗 การเดินทาง: <b style="color:#d97706;">${scoreTravel}</b> / 9`;
+
+            let feedback = "";
+            if (scoreEnergy <= 5) feedback += "💡 ลองปิดไฟและแอร์เมื่อไม่ใช้ดูนะ!<br>";
+            if (scoreWaste <= 7) feedback += "🛍️ ลองลดขยะพลาสติก แล้วพกแก้วส่วนตัวดูนะ<br>";
+            if (scoreTravel <= 5) feedback += "🚶 ระยะใกล้ ๆ เปลี่ยนมาเดินหรือปั่นจักรยานกันเถอะ!<br>";
+
+            if (feedback === "") {
+                feedback = "✨ สุดยอดมาก! คุณคือ 'ฮีโร่สายเขียวตัวจริง' พฤติกรรมของคุณช่วยโลกใบนี้ไว้ได้เยอะมาก ๆ เลยครับ เย้! 🎉";
+            } else {
+                feedback = "🌟 สิ่งที่ต้องลองปรับ:<br>" + feedback;
+            }
+            document.getElementById('feedback-text').innerHTML = feedback;
+        }
+
+        // ระบบดาวน์โหลดการ์ดภาพ
+        document.getElementById('download-btn').onclick = function() {
+            const target = document.getElementById('result-box');
+            html2canvas(target, {
+                backgroundColor: '#f0fdf4', 
+                scale: 2 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'GreenStep-Cute-Result.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click(); 
+            });
+        };
+    </script>
+
+</body>
+</html>
